@@ -1,0 +1,15 @@
+{
+    "welcome_back": "Welcome Back",
+    "email": "Email",
+    "password": "Password",
+    "login": "Login",
+    "signup": "Sign up here",
+    "create_account": "Create Account",
+    "name": "Name",
+    "users": "Users",
+    "map": "Map",
+    "logout": "Logout",
+    "loading": "Loading...",
+    "signup_failed": "Signup failed",
+    "login_failed": "Login failed"
+}
