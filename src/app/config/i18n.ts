@@ -9,13 +9,16 @@ i18n
     .use(initReactI18next)
     .init({
         fallbackLng: "en",
-        debug: true,
         interpolation: {
         escapeValue: false,
         },
         backend: {
         loadPath: "/locales/{{lng}}/{{ns}}.json",
         },
+    });
+
+    i18n.on("languageChanged", (lng) => {
+        document.documentElement.dir = lng === "ar" ? "rtl" : "ltr";
     });
 
 export default i18n;

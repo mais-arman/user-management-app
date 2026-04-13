@@ -1,6 +1,6 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import Loader from "../../shared/components/Loader";
+import Loader from "../../shared/components/ui/Loader";
 import { ROUTES } from "../constants/routes";
 
 export default function ProtectedRoute({ children }: any) {

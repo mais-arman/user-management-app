@@ -1,6 +1,6 @@
 import { useUsers } from "../hooks/useUsers";
 import UserCard from "../components/UserCard";
-import Loader from "../../../shared/components/Loader";
+import Loader from "../../../shared/components/ui/Loader";
 
 export default function UsersList() {
     const { data, isLoading, error } = useUsers();

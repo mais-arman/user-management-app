@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { fetchUserById } from "../api/usersApi";
-import Loader from "../../../shared/components/Loader";
+import Loader from "../../../shared/components/ui/Loader";
 
 interface Props {
     id: number;

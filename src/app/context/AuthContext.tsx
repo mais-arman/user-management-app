@@ -1,12 +1,8 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { STORAGE_KEYS } from "../constants/storage";
-
-interface User {
-    id: number;
-    email: string;
-    name?: string;
-}
-
+import { apiService } from "../services/api.service";
+import { API_ENDPOINTS } from "../constants/api";
+import { User } from "../../shared/types/user";
 interface AuthContextType {
     user: User | null;
     loading: boolean;
@@ -21,58 +17,43 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
 
-    const fetchUser = async (token: string) => {
-        const res = await fetch("http://localhost:8000/auth/me", {
-        headers: { Authorization: `Bearer ${token}` },
-        });
-
-        if (!res.ok) throw new Error("Unauthorized");
-
-        const data = await res.json();
+    const fetchUser = async () => {
+        const data = await apiService.get(API_ENDPOINTS.AUTH.ME);
         setUser(data.user);
     };
 
     const refreshAccessToken = async () => {
         const refreshToken = localStorage.getItem(STORAGE_KEYS.REFRESH_TOKEN);
-        if (!refreshToken) throw new Error("No refresh token");
 
-        const res = await fetch("http://localhost:8000/auth/refresh", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ refresh_token: refreshToken }),
+        const data = await apiService.post(API_ENDPOINTS.AUTH.REFRESH, {
+            refresh_token: refreshToken,
         });
 
-        if (!res.ok) throw new Error("Refresh failed");
-
-        const data = await res.json();
         localStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, data.access_token);
-
         return data.access_token;
     };
 
     useEffect(() => {
         const initAuth = async () => {
-        const token = localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
+            const token = localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
 
-        if (!token) {
-            setLoading(false);
-            return;
-        }
-
-        try {
-            await fetchUser(token);
-        } catch {
-            try {
-            const newToken = await refreshAccessToken();
-            await fetchUser(newToken);
-            } catch {
-            logout();
+            if (!token) {
+                setLoading(false);
+                return;
             }
-        }
 
-        setLoading(false);
+            try {
+                await fetchUser();
+            } catch {
+                try {
+                    await refreshAccessToken();
+                    await fetchUser();
+                } catch {
+                    logout();
+                }
+            }
+
+            setLoading(false);
         };
 
         initAuth();
@@ -91,7 +72,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
 
     return (
         <AuthContext.Provider value={{ user, loading, login, logout, setUser }}>
-        {children}
+            {children}
         </AuthContext.Provider>
     );
 }
